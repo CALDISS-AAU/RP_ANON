@@ -26,39 +26,44 @@ import argparse
 import re
 import sys
 from pathlib import Path
+from dataclasses import dataclass
 
 import fitz  # pymupdf
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
-INPUT_PATH  = "input.pdf"
-OUTPUT_DIR  = "./redacted"
-PATTERNS    = []           # List of regex patterns or exact strings
-CATEGORIES  = []           # Built-in pattern categories
-REPLACEMENTS    = []       # List of regex patterns or exact strings for replacing
+INPUT_PATH = "input.pdf"
+OUTPUT_DIR = "./redacted"
+PATTERNS = []  # List of regex patterns or exact strings
+CATEGORIES = []  # Built-in pattern categories
 REDACT_COLOR = (0, 0, 0)  # RGB fill color (black)
-WHOLE_WORD  = False        # Match whole words only for exact string patterns
+TEXT_COLOR = (1, 1, 1)
+WHOLE_WORD = False  # Match whole words only for exact string patterns
 # ─────────────────────────────────────────────────────────────────────────────
 
 BUILTIN_PATTERNS = {
-    "email":    r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}",
-    "phone":    r"(\+?\d[\d\s\-().]{7,}\d)",
-    "ssn":      r"\b\d{6}-\d{4}",
-    "credit":   r"\b(?:\d[ -]?){13,16}\b",
+    "email": r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}",
+    "phone": r"(\+?\d[\d\s\-().]{7,}\d)",
+    "ssn": r"\b\d{6}-\d{4}",
+    "credit": r"\b(?:\d[ -]?){13,16}\b",
     "postcode": r"\b[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}\b",
-    "date":     r"\b(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\d{4}[\/\-]\d{2}[\/\-]\d{2})\b",
-    "case-id":  r"/Sagsidentifikation - [a-zA-Z0-9]{3}\s\d.\.\d.\.[a-zA-Z0-9]{5}",
+    "date": r"\b(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\d{4}[\/\-]\d{2}[\/\-]\d{2})\b",
+    "case-id": r"/Sagsidentifikation - [a-zA-Z0-9]{3}\s\d.\.\d.\.[a-zA-Z0-9]{5}",
     "case-num": r"^Sagsnummer\.?:\s*\n?\s*(.+)$",
-    "address":  r"(?<=Adresse:\s).*?,\s(?=\d{4}\s)"
+    "address": r"(?<=Adresse:\s).*?,\s(?=\d{4}\s)",
 }
 
-
-def build_patterns(raw_patterns: list[str], categories: list[str],
-                   whole_word: bool) -> list[tuple[str, re.Pattern]]:
+def build_patterns(
+    raw_patterns: list[str],
+    categories: list[str],
+    whole_word: bool,
+) -> list[tuple[str, re.Pattern]]:
     compiled = []
 
     for cat in categories:
         if cat not in BUILTIN_PATTERNS:
-            print(f"  [WARN] Unknown category: '{cat}'. Available: {list(BUILTIN_PATTERNS)}")
+            print(
+                f"  [WARN] Unknown category: '{cat}'. Available: {list(BUILTIN_PATTERNS)}"
+            )
             continue
         compiled.append((f"[{cat}]", re.compile(BUILTIN_PATTERNS[cat], re.IGNORECASE)))
 
@@ -76,32 +81,53 @@ def build_patterns(raw_patterns: list[str], categories: list[str],
     return compiled
 
 
-def redact_pdf(pdf_path: Path, out_path: Path,
-               patterns: list[tuple[str, re.Pattern]]) -> dict:
+def redact_pdf(
+    pdf_path: Path, out_path: Path, patterns: list[tuple[str, re.Pattern]]
+) -> dict:
     result = {
-        "file":       pdf_path.name,
-        "pages":      0,
+        "file": pdf_path.name,
+        "pages": 0,
         "redactions": 0,
-        "error":      "",
+        "error": "",
     }
 
     try:
-        doc = fitz.open(pdf_path)
-        result["pages"] = len(doc)
+        with fitz.open(pdf_path) as doc:
+            result["pages"] = len(doc)
 
-        for page_num, page in enumerate(doc, 1):
-            page_text   = page.get_text()
-            page_redact = 0
+            for page in doc:
+                page_text = page.get_text()
+                page_redact = 0
 
-            for label, pattern in patterns:
-                for match in pattern.finditer(page_text):
-                    matched_text = match.group()
-                    # Search for all instances of the matched text on the page
-                    areas = page.search_for(matched_text, quads=False)
-                    for rect in areas:
-                        page.add_redact_annot(rect, fill=REDACT_COLOR)
-                        page_redact += 1
+
+                for label, pattern, in patterns:
+                    matched_values = {
+                        match.group()
+                        for match in pattern.finditer(page_text)
+                    }
+                    
+                    for matched_text in matched_values:
+                        # Search for all instances of the matched text on the page
+                        areas = page.search_for(matched_text, quads=False)
+
+                        for rect in areas:
+                            if replacement is not None:
+                                page.add_redact_annot(
+                                    rect,
+                                    fill=REDACT_COLOR
+                                )
+                            else:
+
+                                page.add_redact_annot(
+                                    rect,
+                                    replacements,
+                                    text_color=TEXT_COLOR,
+                                    fill=REDACT_COLOR,
+                                    fontname="helv",
+                                    fontsize=11,
+                                    align=fitz.TEXT_ALIGN_CENTER)
                         
+                            page_redact += 1
 
             if page_redact > 0:
                 page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE)
@@ -118,49 +144,73 @@ def redact_pdf(pdf_path: Path, out_path: Path,
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Permanently redact text from PDF files.")
-    parser.add_argument("--input",       default=INPUT_PATH,
-                        help="PDF file or folder of PDFs")
-    parser.add_argument("--output-dir",  default=OUTPUT_DIR)
-    parser.add_argument("--patterns",    nargs="*", default=PATTERNS,
-                        help="Regex patterns or exact strings to redact")
-    parser.add_argument("--categories",  nargs="*", default=CATEGORIES,
-                        choices=list(BUILTIN_PATTERNS.keys()),
-                        help="Built-in pattern categories")
-    parser.add_argument("--whole-word",  action="store_true", default=WHOLE_WORD,
-                        help="Match whole words only for string patterns")
+    parser = argparse.ArgumentParser(
+        description="Permanently redact text from PDF files."
+    )
+    parser.add_argument(
+        "--input", default=INPUT_PATH, help="PDF file or folder of PDFs"
+    )
+    parser.add_argument("--output-dir", default=OUTPUT_DIR)
+    parser.add_argument(
+        "--patterns",
+        nargs="*",
+        default=PATTERNS,
+        help="Regex patterns or exact strings to redact",
+    )
+    parser.add_argument(
+        "--categories",
+        nargs="*",
+        default=CATEGORIES,
+        choices=list(BUILTIN_PATTERNS.keys()),
+        help="Built-in pattern categories",
+    )
+    parser.add_argument(
+        "--replacement",
+        default=None,
+        help="Text inserted in place of each match. Omit for normal redaction.",
+    )
+    parser.add_argument(
+        "--whole-word",
+        action="store_true",
+        default=WHOLE_WORD,
+        help="Match whole words only for string patterns",
+    )
     args = parser.parse_args()
 
     if not args.patterns and not args.categories:
-        sys.exit("[ERROR] Specify at least one --patterns value or --categories option.")
+        sys.exit(
+            "[ERROR] Specify at least one --patterns value or --categories option."
+        )
 
     src = Path(args.input)
     if not src.exists():
         sys.exit(f"[ERROR] Not found: {src}")
 
-    pdfs    = sorted(src.glob("*.pdf")) if src.is_dir() else [src]
+    pdfs = sorted(src.glob("*.pdf")) if src.is_dir() else [src]
     out_dir = Path(args.output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    patterns = build_patterns(args.patterns or [], args.categories or [], args.whole_word)
+    patterns = build_patterns(
+        args.patterns or [], args.categories or [], args.whole_word
+    )
+    replacements = build_patterns(args.replacements or [], args.replacements)
     print(f"Patterns  : {[label for label, _ in patterns]}")
     print(f"Files     : {len(pdfs)}\n")
     print("NOTE: Verify all output files before distributing.\n")
 
-    
-
     for pdf_path in pdfs:
         out_path = out_dir / f"{pdf_path.stem}_redacted.pdf"
-        result   = redact_pdf(pdf_path, out_path, patterns)
+        result = redact_pdf(pdf_path, out_path, patterns)
 
         if result["error"]:
             print(f"  ✗ {pdf_path.name:50s} ERROR — {result['error']}")
         else:
-            print(f"  ✓ {pdf_path.name:50s} {result['redactions']:>4} redaction(s)  →  {out_path.name}")
+            print(
+                f"  ✓ {pdf_path.name:50s} {result['redactions']:>4} redaction(s)  →  {out_path.name}"
+            )
 
     print(f"Output dir    : {out_dir.resolve()}")
 
 
 if __name__ == "__main__":
     main()
-  
