@@ -5,6 +5,7 @@ To run this script, use the following command from the project root:
 """
 
 ## IMPORTS ##
+from gooey import Gooey, GooeyParser
 # Internal
 from Shared_Functions.logger_functionality import *
 from .Functions.example_functions_script import example_function
@@ -37,29 +38,32 @@ OUTPUT_DIR_LOG_2 = "./Pipelines/Frontend/Logs/example_2.log"
 def main() -> None:
     """Run the full Frontend pipeline."""
 
-    example_function(
-        input_str="Hello",
-        logger=setup_logger(
-            output_dir_log=OUTPUT_DIR_LOG_1,
-            logger_name="frontend.step_1",
-        ),
-    )
+    parser = GooeyParser()
+    args = parser.parse_args()
+    
+    # example_function(
+    #     input_str="Hello",
+    #     logger=setup_logger(
+    #         output_dir_log=OUTPUT_DIR_LOG_1,
+    #         logger_name="frontend.step_1",
+    #     ),
+    # )
 
-    example_function(
-        input_str="World!",
-        logger=setup_logger(
-            output_dir_log=OUTPUT_DIR_LOG_2,
-            logger_name="frontend.step_2",
-        ),
-    )
+    # example_function(
+    #     input_str="World!",
+    #     logger=setup_logger(
+    #         output_dir_log=OUTPUT_DIR_LOG_2,
+    #         logger_name="frontend.step_2",
+    #     ),
+    # )
 
-    rebuild_pipeline_log(
-        step_log_paths=[
-            OUTPUT_DIR_LOG_1,
-            OUTPUT_DIR_LOG_2,
-        ],
-        output_dir_log=OUTPUT_DIR_LOG_FULL_PIPELINE,
-    )
+    # rebuild_pipeline_log(
+    #     step_log_paths=[
+    #         OUTPUT_DIR_LOG_1,
+    #         OUTPUT_DIR_LOG_2,
+    #     ],
+    #     output_dir_log=OUTPUT_DIR_LOG_FULL_PIPELINE,
+    # )
 
 
 ## CALL OF MAIN FUNCTION ##
