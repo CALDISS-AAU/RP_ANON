@@ -21,3 +21,6 @@ jobs:
 
       - name: Check uv version
         run: uv --version
+
+      - name: Sync project dependencies
+        run: uv sync --frozen
