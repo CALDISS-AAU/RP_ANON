@@ -40,6 +40,8 @@ def main() -> None:
 
     parser = GooeyParser()
     args = parser.parse_args()
+
+    print("Please let this work!!")
     
     # example_function(
     #     input_str="Hello",
