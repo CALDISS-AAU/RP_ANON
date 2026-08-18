@@ -36,3 +36,9 @@ jobs:
 
       - name: Build Windows executable
         run: uv run pyinstaller --onefile Pipelines/Frontend/frontend_main.py
+
+      - name: Upload Windows executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: RP_ANON-Windows
+          path: dist/frontend_main.exe
