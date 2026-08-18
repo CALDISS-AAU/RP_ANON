@@ -33,3 +33,6 @@ jobs:
 
       - name: Check PyInstaller version
         run: uv run pyinstaller --version
+
+      - name: Build Windows executable
+        run: uv run pyinstaller --onefile Pipelines/Frontend/frontend_main.py
