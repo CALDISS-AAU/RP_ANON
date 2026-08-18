@@ -27,3 +27,9 @@ jobs:
 
       - name: Test frontend imports
         run: uv run python -c "import Pipelines.Frontend.frontend_main; print('Frontend imported successfully')"
+
+      - name: Install PyInstaller
+        run: uv pip install pyinstaller
+
+      - name: Check PyInstaller version
+        run: uv run pyinstaller --version
