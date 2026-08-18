@@ -6,7 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "ANON"
 version = "0.1.0"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "gooey>=1.0.8.1",
+]
 
 [project.scripts]
 create-pipeline = "Shared_Functions.Pipeline_Functions.pipeline_generator:main"
