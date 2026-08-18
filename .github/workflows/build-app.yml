@@ -24,3 +24,6 @@ jobs:
 
       - name: Sync project dependencies
         run: uv sync --frozen
+
+      - name: Test frontend imports
+        run: uv run python -c "import Pipelines.Frontend.frontend_main; print('Frontend imported successfully')"
