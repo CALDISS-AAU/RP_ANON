@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  build-windows:
+    runs-on: windows-latest
 
     steps:
-      - name: Say hello
-        run: echo "GitHub Actions is working"
+      - name: Check out repository
+        uses: actions/checkout@v4
