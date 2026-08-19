@@ -45,7 +45,11 @@ def extract_and_validate(args: Namespace):
 
     print("Starter extract_and_validate", flush=True)
 
-    input_path = _validate_input_path(args.input_path)
+    print("7. Læser args.input_path", flush=True)
+    raw_input_path = args.input_path
+    print(f"8. raw_input_path = {raw_input_path!r}", flush=True)
+
+    input_path = _validate_input_path(raw_input_path)
 
     print("extract_and_validate færdig", flush=True)
 

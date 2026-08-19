@@ -56,7 +56,13 @@ def main() -> Namespace:
 
     print("Programmet er startet", flush=True)
 
+    print("A. Før extract_and_validate", flush=True)
+    print(f"B. args = {args!r}", flush=True)
+    print(f"C. args.input_path = {args.input_path!r}", flush=True)
+
     validated_args = extract_and_validate(args)
+
+    print("D. Efter extract_and_validate", flush=True)
 
     print("Der er givet følgende input:\n"
           f"Input fil: ")
