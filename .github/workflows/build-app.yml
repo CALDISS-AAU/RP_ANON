@@ -37,7 +37,7 @@ jobs:
       - name: Build Windows executable
         run: >
           uv run pyinstaller
-          --onefile
+          --onedir
           --paths .
           --collect-submodules Shared_Functions
           --collect-submodules Pipelines.Frontend
