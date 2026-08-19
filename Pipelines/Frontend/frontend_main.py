@@ -37,8 +37,12 @@ from Pipelines.Frontend.Functions.build_GUI import build_GUI
 
 ## MAIN FUNCTION ##
 @Gooey(
-    program_name = "PDF-anonymiseringsværktøj",
-    program_description = "Dette er et værktøj til anonymisering af danske sagsakter i PDF format."
+    program_name="PDF-anonymiseringsværktøj",
+    program_description=(
+        "Dette er et værktøj til anonymisering af danske sagsakter i PDF format."
+    ),
+    required_cols=1,
+    optional_cols=1,
 )
 def main() -> Namespace:
     """Run the full Frontend pipeline."""
@@ -48,6 +52,8 @@ def main() -> Namespace:
     build_GUI(parser)
 
     args = parser.parse_args()
+
+    print("Start-knappen blev trykket!")
 
     return args
 
