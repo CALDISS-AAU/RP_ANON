@@ -53,5 +53,14 @@ def main() -> Namespace:
 
 
 ## CALL OF MAIN FUNCTION ##
+# if __name__ == "__main__":
+#     main()
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        import traceback
+
+        traceback.print_exc()
+        input("\nPress Enter to close...")
+        raise
