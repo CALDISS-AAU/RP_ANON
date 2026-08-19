@@ -38,6 +38,7 @@ jobs:
         run: >
           uv run pyinstaller
           --onedir
+          --windowed
           --paths .
           --collect-submodules Shared_Functions
           --collect-submodules Pipelines.Frontend
@@ -47,4 +48,4 @@ jobs:
         uses: actions/upload-artifact@v6
         with:
           name: RP_ANON-Windows
-          path: dist/frontend_main.exe
+          path: dist/frontend_main/
