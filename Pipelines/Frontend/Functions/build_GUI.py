@@ -70,7 +70,7 @@ def build_GUI(parser: GooeyParser) -> None:
         parser=parser,
         argument_name="output_path",
         label="Output",
-        text_for_user="Vælg den mappe de anonymiserede PDF-filer skal gemmes i",
+        text_for_user="Vælg den mappe den anonymiserede PDF-fil skal gemmes i",
         widget="DirChooser",
     )
 

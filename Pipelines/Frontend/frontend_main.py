@@ -10,6 +10,7 @@ from argparse import Namespace
 # Internal
 from Shared_Functions.logger_functionality import *
 from Pipelines.Frontend.Functions.build_GUI import build_GUI
+from Pipelines.Frontend.Functions.extract_and_validate import extract_and_validate
 ## _______ ##
 
 
@@ -32,10 +33,6 @@ from Pipelines.Frontend.Functions.build_GUI import build_GUI
 
 
 ## HELPER FUNCTIONS ##
-## ________________ ##
-
-
-## MAIN FUNCTION ##
 @Gooey(
     program_name="PDF-anonymiseringsværktøj",
     program_description=(
@@ -44,6 +41,10 @@ from Pipelines.Frontend.Functions.build_GUI import build_GUI
     required_cols=1,
     optional_cols=1,
 )
+## ________________ ##
+
+
+## MAIN FUNCTION ##
 def main() -> Namespace:
     """Run the full Frontend pipeline."""
 
@@ -53,10 +54,14 @@ def main() -> Namespace:
 
     args = parser.parse_args()
 
-    print("Start-knappen blev trykket!")
+    print("Programmet er startet")
 
-    return args
+    validated_args = extract_and_validate(args)
 
+    print("Der er givet følgende input:\n"
+          f"Input fil: ")
+
+    return validated_args
 
 ## CALL OF MAIN FUNCTION ##
 # if __name__ == "__main__":
