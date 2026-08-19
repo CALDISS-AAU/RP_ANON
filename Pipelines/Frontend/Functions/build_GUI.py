@@ -104,16 +104,17 @@ def build_GUI(parser: GooeyParser) -> None:
         label="Forældre 2's navn"
     )
 
-    _add_text_field(
-        parser=parser,
-        argument_name="additions",
-        label="Andet der skal anonymiseres",
-         text_for_user=(
-            "Hvis der er andet der skal anonymiseres, kan det tilføjes her. "
+    other = parser.add_argument_group(
+        "Andet der skal anonymiseres",
+        ("Hvis der er andet der skal anonymiseres, kan det tilføjes her. "
             "Dette kunne f.eks. være skolens navn, andre navne end barnet og "
             "forældrene, fødselsdage, eller lignende. \n"
             "Denne liste separeres med semikolon, ligesom navnelisterne, "
             "og denne liste er også følsom overfor store/små bogstaver."
-        ),
+        )
+    )
+    _add_text_field(
+        parser=parser,
+        argument_name="additions",
     )
     
