@@ -54,7 +54,7 @@ def build_GUI(parser: GooeyParser) -> None:
             "Vælg en PDF-fil eller mappe med PDF-filer, "
             "der skal anonymiseres"
         ),
-        widget="FileDirChooser",
+        widget="FileChooser",
     )
 
     _add_browse_field(
