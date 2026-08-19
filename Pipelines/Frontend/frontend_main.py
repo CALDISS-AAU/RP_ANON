@@ -54,7 +54,7 @@ def main() -> Namespace:
 
     args = parser.parse_args()
 
-    print("Programmet er startet")
+    print("Programmet er startet", flush=True)
 
     validated_args = extract_and_validate(args)
 
