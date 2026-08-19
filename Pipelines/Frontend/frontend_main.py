@@ -8,7 +8,7 @@ To run this script, use the following command from the project root:
 from gooey import Gooey, GooeyParser
 # Internal
 from Shared_Functions.logger_functionality import *
-from .Functions.example_functions_script import example_function
+from Pipelines.Functions.example_functions_script import example_function
 ## _______ ##
 
 
