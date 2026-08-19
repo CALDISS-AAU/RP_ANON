@@ -35,7 +35,13 @@ jobs:
         run: uv run pyinstaller --version
 
       - name: Build Windows executable
-        run: uv run pyinstaller --onefile Pipelines/Frontend/frontend_main.py
+        run: >
+          uv run pyinstaller
+          --onefile
+          --paths .
+          --collect-submodules Shared_Functions
+          --collect-submodules Pipelines.Frontend
+          Pipelines/Frontend/frontend_main.py
 
       - name: Upload Windows executable
         uses: actions/upload-artifact@v6
