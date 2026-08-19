@@ -116,5 +116,6 @@ def build_GUI(parser: GooeyParser) -> None:
     _add_text_field(
         parser=parser,
         argument_name="additions",
+        label=""
     )
     
