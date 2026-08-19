@@ -8,6 +8,7 @@ version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
     "gooey>=1.0.8.1",
+    "six>=1.17.0",
 ]
 
 [project.scripts]
