@@ -10,7 +10,14 @@ from pathlib import Path
 def _validate_input_path(input_path: str) -> Path:
     """Validate that the selected input file is a PDF."""
 
+    print(f"Validerer input: {input_path}")
+
     path = Path(input_path)
+
+    print(f"Path: {path}")
+    print(f"Exists: {path.exists()}")
+    print(f"Is file: {path.is_file()}")
+    print(f"Suffix: {path.suffix}")
 
     if not path.is_file():
         raise ValueError(
@@ -37,5 +44,3 @@ def extract_and_validate(args: Namespace):
     # More validation will follow...
 
     return input_path
-
-    pass
