@@ -1,10 +1,11 @@
 import logging
 from pathlib import Path
 
+
 def setup_logger(
-    output_dir_log: str, 
-    logger_name: str, 
-    overwrite=True, 
+    output_dir_log: str,
+    logger_name: str,
+    overwrite=True,
 ) -> logging.Logger:
     """Set up and return a file logger for data inspection.
 
@@ -39,6 +40,7 @@ def setup_logger(
     logger.addHandler(file_handler)
 
     return logger
+
 
 from pathlib import Path
 

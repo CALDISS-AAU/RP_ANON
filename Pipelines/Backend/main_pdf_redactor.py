@@ -77,6 +77,27 @@ def main():
         help="Match whole words only for string patterns",
     )
 
+    parser.add_argument(
+        "--barn-navn",
+        nargs="*",
+        default=[],
+        help="Patterns/values that should be replaced with [barnet]",
+    )
+
+    parser.add_argument(
+        "--foraeldre-1",
+        nargs="*",
+        default=[],
+        help="Patterns/values that should be replaced with [forældre-1]",
+    )
+
+    parser.add_argument(
+        "--foraeldre-2",
+        nargs="*",
+        default=[],
+        help="Patterns/values that should be replaced with [forældre-2]",
+    )
+
     args = parser.parse_args()
 
     if not args.patterns and not args.categories:
