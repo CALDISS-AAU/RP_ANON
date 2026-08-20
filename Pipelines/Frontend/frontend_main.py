@@ -60,7 +60,7 @@ def main() -> Namespace:
     print(f"B. args = {args!r}", flush=True)
     print(f"C. args.input_path = {args.input_path!r}", flush=True)
 
-    validated_args = extract_and_validate(args)
+    validated_args = args#extract_and_validate(args)
 
     print("D. Efter extract_and_validate", flush=True)
 
