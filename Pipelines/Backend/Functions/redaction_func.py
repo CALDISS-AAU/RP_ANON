@@ -55,19 +55,24 @@ class RedactionConfig:
 
 BUILTIN_PATTERNS = {
     "email": r"[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}",
-    "phone": r"(\+?\d[\d\s\-().]{7,}\d)",
+    "phone": r"(\+?\d[\d\s\-().]{6,}\d)",
     "cpr": r"\b\d{6}-\d{4}",
     "credit": r"\b(?:\d[ -]?){13,16}\b",
     "postcode": r"\b[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}\b",
     "date": r"\b(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\d{4}[\/\-]\d{2}[\/\-]\d{2})\b",
     "case-id": r"([a-zA-Z0-9]{3}\s\d.\.\d.\.[a-zA-Z0-9]{5})",
     "case-num": r"Sagsnr[.,]?\s*:\s*([^\r\n]+)",
-    "address": r"(\w*\s\d.\s)\d{4}\s\w*",
+    "address": r"[a-zA-ZæøåÆØÅ\s-]+ \d+[a-zA-Z]?(?:,?\s*(?:st|kl|\d+)\.?(?:\s*(?:tv|th|mf|\d+))?)?,?\s*\d{4}\s+[a-zA-ZæøåÆØÅ\s-]+",
 }
 
 
 def _build_patterns(
-    raw_patterns: list[str], categories: list[str], whole_word: bool
+    raw_patterns: list[str],
+    categories: list[str],
+    whole_word: bool,
+    barn_navn: list[str],
+    foraeldre_1: list[str],
+    foraeldre_2: list[str],
 ) -> list[tuple[str, re.Pattern]]:
     compiled = []
 
@@ -77,7 +82,9 @@ def _build_patterns(
                 f"  [WARN] Unknown category: '{cat}'. Available: {list(BUILTIN_PATTERNS)}"
             )
             continue
-        compiled.append((f"[{cat}]", re.compile(BUILTIN_PATTERNS[cat], re.IGNORECASE)))
+        compiled.append(
+            (f"[{cat}]", re.compile(BUILTIN_PATTERNS[cat], re.IGNORECASE), None)
+        )
 
     for pat in raw_patterns:
         try:
@@ -85,10 +92,29 @@ def _build_patterns(
             re.compile(pat)
             if whole_word:
                 pat = rf"\b{re.escape(pat)}\b"
-            compiled.append((pat, re.compile(pat, re.IGNORECASE)))
+            compiled.append((pat, re.compile(pat, re.IGNORECASE), None))
         except re.error:
             escaped = re.escape(pat)
             compiled.append((pat, re.compile(escaped, re.IGNORECASE)))
+
+    for value in barn_navn:
+        compiled.append(
+            (
+                value,
+                re.compile(re.escape(value), re.IGNORECASE),
+                "[barnet]",
+            )
+        )
+
+    for value in foraeldre_1:
+        compiled.append(
+            (value, re.compile(re.escape(value), re.IGNORECASE), "[forældre-1]")
+        )
+
+    for value in foraeldre_2:
+        compiled.append(
+            (value, re.compile(re.escape(value), re.IGNORECASE), "[forældre-2]")
+        )
 
     return compiled
 
@@ -97,7 +123,6 @@ def _redact_pdf(
     config: RedactionConfig,
     pdf_path: Path,
     patterns: list[tuple[str, re.Pattern]],
-    replacement: str | None,
     out_path: Path,
 ) -> dict:
     result = {
@@ -115,12 +140,12 @@ def _redact_pdf(
                 page_text = page.get_text()
                 page_redact = 0
 
-                for (
-                    label,
-                    pattern,
-                ) in patterns:
+                for label, pattern, replacement in patterns:
                     matched_values = {
-                        match.group() for match in pattern.finditer(page_text)
+                        match.group(2)
+                        if match.lastindex and match.lastindex >= 2
+                        else match.group()
+                        for match in pattern.finditer(page_text)
                     }
 
                     for matched_text in matched_values:
@@ -129,13 +154,16 @@ def _redact_pdf(
 
                         for rect in areas:
                             if replacement is None:
-                                page.add_redact_annot(rect, fill=config.redact_color)
+                                page.add_redact_annot(
+                                    rect,
+                                    fill=config.redact_color,
+                                    align=fitz.TEXT_ALIGN_CENTER,
+                                )
                             else:
                                 page.add_redact_annot(
                                     rect,
                                     text=replacement,
                                     text_color=config.text_color,
-                                    fill=config.redact_color,
                                     fontname=config.fontname,
                                     fontsize=config.fontsize,
                                     align=fitz.TEXT_ALIGN_CENTER,

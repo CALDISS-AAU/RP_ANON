@@ -5,9 +5,7 @@ import subprocess
 # Functions
 
 
-def searchable_pdf(
-    input_path: Path, output_dir: Path, file_suffix: str, language: str = "dan"
-) -> Path:
+def searchable_pdf(input_path: Path, language: str = "dan") -> Path:
     """
     Function for turning scanned image pdf's into searchable pdf's.
 
@@ -15,16 +13,15 @@ def searchable_pdf(
     input_file : .pdf
     output_file: .pdf
     """
-    output_dir.mkdir(parents=True, exist_ok=True)
+    # output_dir.mkdir(parents=True, exist_ok=True)
 
-    output_name = f"{input_path.stem}{file_suffix}{input_path.suffix}"
-    output_path = output_dir / output_name
-    
-    
+    # output_name = f"{input_path.stem}{file_suffix}{input_path.suffix}"
+    # output_path = output_dir / output_name
+
     command = [
         "ocrmypdf",
         str(input_path),
-        str(output_path),
+        # str(output_path),
         "--language",
         language,
         "--deskew",
