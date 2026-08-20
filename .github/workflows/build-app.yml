@@ -49,5 +49,5 @@ jobs:
       - name: Upload Windows executable
         uses: actions/upload-artifact@v6
         with:
-          name: RP_ANON-Windows
-          path: dist/RP_ANON/
+          name: CALDISS_Anonymiserings_program-Windows
+          path: dist/CALDISS_Anonymiserings_program/
