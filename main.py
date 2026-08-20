@@ -14,30 +14,26 @@ from pathlib import Path
 import argparse
 
 # Pipeline mains
-from Pipelines.Backend.Functions.ocr_func import searchable_pdf
+from Pipelines.Frontend.frontend_main import main as run_frontend
+# from Pipelines.Backend.Functions.ocr_func import searchable_pdf
 ## _______ ##
 
 
 ## MAIN FUNCTION ##
 def main():
-    parser = argparse.ArgumentParser(description="OCR treament of documents")
-    parser.add_argument("--input", required=True, type=Path, help="Path to input pdf")
-    parser.add_argument(
-        "--output-dir", required=True, type=Path, help="Path to output file"
-    )
-    parser.add_argument("--language", default="dan", help="Language of input file")
-    parser.add_argument(
-        "--suffix", default="_ocr", help="Standard suffix for output file"
-    )
+    backend_args = run_frontend()
 
-    args = parser.parse_args()
+    if backend_args is None:
+        return None
 
-    searchable_pdf(
-        input_path=args.input,
-        output_dir=args.output_dir,
-        file_suffix=args.suffix,
-        language=args.language,
-    )
+    # run_backend(
+    #     input=backend_args["input"],
+    #     output_dir=backend_args["output-dir"],
+    #     barn_navn=backend_args["barn-navn"],
+    #     foraeldre_1=backend_args["foraeldre-1"],
+    #     foraeldre_2=backend_args["foraeldre-2"],
+    #     patterns=backend_args["patterns"],
+    # )
 
 
 ## _____________ ##
