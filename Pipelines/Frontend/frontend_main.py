@@ -40,6 +40,7 @@ from Pipelines.Frontend.Functions.extract_and_validate import extract_and_valida
     ),
     required_cols=1,
     optional_cols=1,
+    encoding="utf-8",
 )
 ## ________________ ##
 
