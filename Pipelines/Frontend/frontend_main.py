@@ -30,6 +30,14 @@ def _confirm_warnings(warnings: list[str]) -> bool:
         "Ellers tryk 'Gå tilbage' og ret oplysningerne."
     )
 
+    app = wx.GetApp()
+
+    created_app = False
+
+    if app is None:
+        app = wx.App(False)
+        created_app = True
+
     dialog = wx.MessageDialog(
         parent=None,
         message=message,
@@ -43,10 +51,13 @@ def _confirm_warnings(warnings: list[str]) -> bool:
     )
 
     result = dialog.ShowModal()
+
     dialog.Destroy()
 
-    return result == wx.ID_YES
+    if created_app:
+        app.Destroy()
 
+    return result == wx.ID_YES
 
 ## MAIN FUNCTION ##
 @Gooey(
@@ -123,4 +134,4 @@ if __name__ == "__main__":
 
         traceback.print_exc()
 
-        raise
+        sys.exit(1)
