@@ -80,9 +80,10 @@ def build_GUI(parser: GooeyParser) -> None:
 
     names = parser.add_argument_group(
         "Navne",
-        ("Indtast ALLE permutationer af navne for de følgende personer, "
+        ("Indtast ALLE kombinationer af navne for de følgende personer, "
          "separeret med semikolon (;).\n"
-         "Eksempel: Anna; Anna Hansen; Anna M. Hansen; Frk. Hansen; ...\n"
+         "Eksempel for en pige hvis fulde navn er Anna Marie Hansen: "
+         "Anna; Anna Hansen; Anna M. Hansen; Frk. Hansen; A. M. Hansen; ...\n"
          "NB! Der adskilles mellem store og små bogstaver." 
          "I eksemplet ovenfor vil 'anna' derfor ikke blive anonymiseret!"
         )
