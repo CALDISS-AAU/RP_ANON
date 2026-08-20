@@ -55,9 +55,7 @@ def find_project_root() -> Path:
         if (path / "pyproject.toml").exists():
             return path
 
-    raise FileNotFoundError(
-        "Could not find project root containing pyproject.toml."
-    )
+    raise FileNotFoundError("Could not find project root containing pyproject.toml.")
 
 
 def clear_directory(directory_path: Path) -> None:
@@ -76,6 +74,8 @@ def clear_directory(directory_path: Path) -> None:
             item_path.unlink()
         elif item_path.is_dir():
             shutil.rmtree(item_path)
+
+
 # ________________ #
 
 
@@ -107,9 +107,7 @@ def clear_pipeline(name: str) -> None:
     pipeline_path = pipelines_root / folder_name
 
     if not pipeline_path.is_dir():
-        raise FileNotFoundError(
-            f"Pipeline does not exist: {folder_name}"
-        )
+        raise FileNotFoundError(f"Pipeline does not exist: {folder_name}")
 
     cleared_folders: list[str] = []
 
@@ -117,27 +115,22 @@ def clear_pipeline(name: str) -> None:
         folder_path = pipeline_path / folder_name_to_clear
 
         if not folder_path.exists():
-            print(
-                f"Skipped missing directory: "
-                f"{folder_path.relative_to(project_root)}"
-            )
+            print(f"Skipped missing directory: {folder_path.relative_to(project_root)}")
             continue
 
         if not folder_path.is_dir():
-            raise NotADirectoryError(
-                f"Expected a directory: {folder_path}"
-            )
+            raise NotADirectoryError(f"Expected a directory: {folder_path}")
 
         clear_directory(folder_path)
         cleared_folders.append(folder_name_to_clear)
 
     if cleared_folders:
         folders_text = " and ".join(cleared_folders)
-        print(
-            f"Cleared {folders_text} for pipeline: {folder_name}"
-        )
+        print(f"Cleared {folders_text} for pipeline: {folder_name}")
     else:
         print(f"No directories were cleared for pipeline: {folder_name}")
+
+
 # __________________ #
 
 
@@ -145,10 +138,7 @@ def clear_pipeline(name: str) -> None:
 def main() -> None:
     """Run the pipeline-cleaning command-line interface."""
     parser = argparse.ArgumentParser(
-        description=(
-            "Remove all contents from a pipeline's Data and Logs "
-            "directories."
-        )
+        description=("Remove all contents from a pipeline's Data and Logs directories.")
     )
 
     parser.add_argument(
