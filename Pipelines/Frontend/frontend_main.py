@@ -6,33 +6,14 @@ To run this script, use the following command from the project root:
 
 ## IMPORTS ##
 from gooey import Gooey, GooeyParser
-from argparse import Namespace
+
 # Internal
-from Shared_Functions.logger_functionality import *
 from Pipelines.Frontend.Functions.build_GUI import build_GUI
 from Pipelines.Frontend.Functions.extract_and_validate import extract_and_validate
 ## _______ ##
 
 
-## STATIC VARIABLES ##
-# Directories - input
-# INPUT_DIR_AAA = "xxx/yyy.zzz"
-
-# Directories - internal output
-# OUTPUT_DIR_AAA = "Pipelines/Frontend/Data/xxx.zzz"
-
-# Directories - global output
-# OUTPUT_DIR_AAA = "./Data/Frontend/xxx.zzz"
-
-# Directories - logs
-# OUTPUT_DIR_LOG_FULL_PIPELINE = "./Pipelines/Frontend/Logs/full_pipeline.log"
-# OUTPUT_DIR_LOG_1 = "./Pipelines/Frontend/Logs/example_1.log"
-# OUTPUT_DIR_LOG_2 = "./Pipelines/Frontend/Logs/example_2.log"
-
-## _______________________ ##
-
-
-## HELPER FUNCTIONS ##
+## MAIN FUNCTION ##
 @Gooey(
     program_name="PDF-anonymiseringsværktøj",
     program_description=(
@@ -42,12 +23,8 @@ from Pipelines.Frontend.Functions.extract_and_validate import extract_and_valida
     optional_cols=1,
     encoding="utf-8",
 )
-## ________________ ##
-
-
-## MAIN FUNCTION ##
-def main() -> Namespace:
-    """Run the full Frontend pipeline."""
+def main() -> dict:
+    """Run the frontend and return validated arguments for the backend."""
 
     parser = GooeyParser()
 
@@ -58,24 +35,39 @@ def main() -> Namespace:
     print("Programmet er startet", flush=True)
 
     try:
-        validated_args = extract_and_validate(args)
+        backend_args, warnings = extract_and_validate(args)
 
     except Exception as exc:
         raise RuntimeError(
             f"Fejl under validering af input: {exc}"
         ) from exc
 
+    if warnings:
+        print(
+            "\nFølgende input afviger fra det forventede format:",
+            flush=True,
+        )
+
+        for warning in warnings:
+            print(
+                f"- {warning}",
+                flush=True,
+            )
+
+        print(
+            "\nKontrollér venligst, at oplysningerne er korrekte.",
+            flush=True,
+        )
+
     print(
-        "Der er givet følgende input:\n"
-        f"Input fil: {validated_args}",
+        "\nInput er valideret.",
         flush=True,
     )
 
-    return validated_args
+    return backend_args
+
 
 ## CALL OF MAIN FUNCTION ##
-# if __name__ == "__main__":
-#     main()
 if __name__ == "__main__":
     try:
         main()
