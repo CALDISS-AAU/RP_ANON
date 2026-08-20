@@ -37,6 +37,7 @@ def main():
 
     print("Programmet er nu færdigkørt.")
 
+
 ## _____________ ##
 
 ## CALL OF MAIN FUNCTION ##

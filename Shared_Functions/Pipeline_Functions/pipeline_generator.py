@@ -42,12 +42,7 @@ import re
 # _______ #
 
 # STATIC VARIABLES #
-FOLDERS_TO_GENERATE = [
-    "Data", 
-    "Functions", 
-    "Logs", 
-    "Tests"
-]
+FOLDERS_TO_GENERATE = ["Data", "Functions", "Logs", "Tests"]
 
 OPTIONAL_FOLDERS = {
     "model": ["Modelling"],
@@ -151,6 +146,7 @@ def example_function(
 '''
 # _________ #
 
+
 # HELPER FUNCTIONS #
 def split_words(text: str) -> list[str]:
     """Split text into alphanumeric words."""
@@ -168,6 +164,7 @@ def to_snake_case(text: str) -> str:
     words = split_words(text)
     return "_".join(word.lower() for word in words)
 
+
 def find_project_root() -> Path:
     """Find the nearest parent directory containing pyproject.toml."""
     current_path = Path.cwd()
@@ -177,7 +174,10 @@ def find_project_root() -> Path:
             return path
 
     raise FileNotFoundError("Could not find project root with pyproject.toml.")
+
+
 # ________________ #
+
 
 # COMBINING ALL HELPERFUNTIONS #
 def create_pipeline(
@@ -238,11 +238,7 @@ def create_pipeline(
         encoding="utf-8",
     )
 
-    functions_script_path = (
-        pipeline_path
-        / "Functions"
-        / "example_functions_script.py"
-    )
+    functions_script_path = pipeline_path / "Functions" / "example_functions_script.py"
 
     functions_script_path.write_text(
         PIPELINE_EXAMPLE_FUNCTIONS_SCRIPT_TEXT,
@@ -257,7 +253,10 @@ def create_pipeline(
 
     print(f"Created pipeline: {folder_name}")
     print(f"Generated folders: {', '.join(folders_to_generate)}")
+
+
 # ____________________________ #
+
 
 # FUNCTION MAIN #
 def main() -> None:
@@ -278,10 +277,7 @@ def main() -> None:
         action="append",
         choices=OPTIONAL_FOLDERS,
         default=[],
-        help=(
-            "Include an optional folder group. "
-            "May be supplied more than once."
-        ),
+        help=("Include an optional folder group. May be supplied more than once."),
     )
 
     args = parser.parse_args()
