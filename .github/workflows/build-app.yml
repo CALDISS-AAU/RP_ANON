@@ -25,8 +25,8 @@ jobs:
       - name: Sync project dependencies
         run: uv sync --frozen
 
-      - name: Test frontend imports
-        run: uv run python -c "import Pipelines.Frontend.frontend_main; print('Frontend imported successfully')"
+      - name: Test application imports
+        run: uv run python -c "import main; print('Application imported successfully')"
 
       - name: Install PyInstaller
         run: uv pip install pyinstaller
@@ -37,14 +37,17 @@ jobs:
       - name: Build Windows executable
         run: >
           uv run pyinstaller
+          --name CALDISS_Anonymiserings_program
           --onedir
+          --python-option "X utf8=1"
+          --windowed
           --paths .
           --collect-submodules Shared_Functions
           --collect-submodules Pipelines.Frontend
-          Pipelines/Frontend/frontend_main.py
+          main.py
 
       - name: Upload Windows executable
         uses: actions/upload-artifact@v6
         with:
-          name: RP_ANON-Windows
-          path: dist/frontend_main/
+          name: CALDISS_Anonymiserings_program-Windows
+          path: dist/CALDISS_Anonymiserings_program/

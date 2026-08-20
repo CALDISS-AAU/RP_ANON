@@ -5,34 +5,63 @@ To run this script, use the following command from the project root:
 """
 
 ## IMPORTS ##
+import sys
+import traceback
+import wx
 from gooey import Gooey, GooeyParser
-from argparse import Namespace
+
 # Internal
-from Shared_Functions.logger_functionality import *
 from Pipelines.Frontend.Functions.build_GUI import build_GUI
 from Pipelines.Frontend.Functions.extract_and_validate import extract_and_validate
 ## _______ ##
 
 
-## STATIC VARIABLES ##
-# Directories - input
-# INPUT_DIR_AAA = "xxx/yyy.zzz"
-
-# Directories - internal output
-# OUTPUT_DIR_AAA = "Pipelines/Frontend/Data/xxx.zzz"
-
-# Directories - global output
-# OUTPUT_DIR_AAA = "./Data/Frontend/xxx.zzz"
-
-# Directories - logs
-# OUTPUT_DIR_LOG_FULL_PIPELINE = "./Pipelines/Frontend/Logs/full_pipeline.log"
-# OUTPUT_DIR_LOG_1 = "./Pipelines/Frontend/Logs/example_1.log"
-# OUTPUT_DIR_LOG_2 = "./Pipelines/Frontend/Logs/example_2.log"
-
-## _______________________ ##
-
-
 ## HELPER FUNCTIONS ##
+def _confirm_warnings(warnings: list[str]) -> bool:
+    """Ask the user whether to continue despite validation warnings."""
+
+    warning_text = "\n".join(
+        f"- {warning}"
+        for warning in warnings
+    )
+
+    message = (
+        "Der er indtastet følgende, som ikke var forventet:\n\n"
+        f"{warning_text}\n\n"
+        "Hvis dette er bevidst, tryk 'Fortsæt'.\n"
+        "Ellers tryk 'Gå tilbage' og ret oplysningerne."
+    )
+
+    app = wx.GetApp()
+
+    created_app = False
+
+    if app is None:
+        app = wx.App(False)
+        created_app = True
+
+    dialog = wx.MessageDialog(
+        parent=None,
+        message=message,
+        caption="Kontrollér input",
+        style=wx.YES_NO | wx.ICON_WARNING,
+    )
+
+    dialog.SetYesNoLabels(
+        "Fortsæt",
+        "Gå tilbage",
+    )
+
+    result = dialog.ShowModal()
+
+    dialog.Destroy()
+
+    if created_app:
+        app.Destroy()
+
+    return result == wx.ID_YES
+
+## MAIN FUNCTION ##
 @Gooey(
     program_name="PDF-anonymiseringsværktøj",
     program_description=(
@@ -41,13 +70,10 @@ from Pipelines.Frontend.Functions.extract_and_validate import extract_and_valida
     required_cols=1,
     optional_cols=1,
     encoding="utf-8",
+    # return_to_config=True,
 )
-## ________________ ##
-
-
-## MAIN FUNCTION ##
-def main() -> Namespace:
-    """Run the full Frontend pipeline."""
+def main() -> dict | None:
+    """Run the frontend and return validated arguments for the backend."""
 
     parser = GooeyParser()
 
@@ -57,27 +83,58 @@ def main() -> Namespace:
 
     print("Programmet er startet", flush=True)
 
-    print("A. Før extract_and_validate", flush=True)
-    print(f"B. args = {args!r}", flush=True)
-    print(f"C. args.input_path = {args.input_path!r}", flush=True)
+    try:
+        backend_args, warnings = extract_and_validate(args)
 
-    validated_args = args#extract_and_validate(args)
+    except Exception as exc:
+        raise RuntimeError(
+            f"Fejl under validering af input: {exc}"
+        ) from exc
 
-    print("D. Efter extract_and_validate", flush=True)
+    if warnings:
+        should_continue = _confirm_warnings(warnings)
 
-    print("Der er givet følgende input:\n"
-          f"Input fil: ")
+        if not should_continue:
+            print(
+                "Input skal rettes. Går tilbage til indstillingerne.",
+                flush=True,
+            )
+            return None
 
-    return validated_args
+    print(
+        "\nInput er valideret.",
+        flush=True,
+    )
+
+    print(
+        "\nArgumenter sendt videre til backend:",
+        flush=True,
+    )
+
+    for argument, value in backend_args.items():
+        print(
+            f"{argument}: {value}",
+            flush=True,
+        )
+
+    return backend_args
+
 
 ## CALL OF MAIN FUNCTION ##
-# if __name__ == "__main__":
-#     main()
 if __name__ == "__main__":
     try:
         main()
-    except Exception:
-        import traceback
+
+    except Exception as exc:
+        print(
+            "\n"
+            "========================================\n"
+            "PROGRAMMET STOPPEDE MED EN FEJL\n"
+            "========================================\n"
+            f"{type(exc).__name__}: {exc}\n",
+            flush=True,
+        )
 
         traceback.print_exc()
-        raise
+
+        sys.exit(1)
