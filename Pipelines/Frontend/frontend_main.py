@@ -5,6 +5,10 @@ To run this script, use the following command from the project root:
 """
 
 ## IMPORTS ##
+import os
+
+os.environ["PYTHONUTF8"] = "1"
+
 from gooey import Gooey, GooeyParser
 from argparse import Namespace
 # Internal
@@ -57,16 +61,19 @@ def main() -> Namespace:
 
     print("Programmet er startet", flush=True)
 
-    print("A. Før extract_and_validate", flush=True)
-    print(f"B. args = {args!r}", flush=True)
-    print(f"C. args.input_path = {args.input_path!r}", flush=True)
+    try:
+        validated_args = extract_and_validate(args)
 
-    validated_args = args#extract_and_validate(args)
+    except Exception as exc:
+        raise RuntimeError(
+            f"Fejl under validering af input: {exc}"
+        ) from exc
 
-    print("D. Efter extract_and_validate", flush=True)
-
-    print("Der er givet følgende input:\n"
-          f"Input fil: ")
+    print(
+        "Der er givet følgende input:\n"
+        f"Input fil: {validated_args}",
+        flush=True,
+    )
 
     return validated_args
 
@@ -76,8 +83,19 @@ def main() -> Namespace:
 if __name__ == "__main__":
     try:
         main()
-    except Exception:
+
+    except Exception as exc:
         import traceback
 
+        print(
+            "\n"
+            "========================================\n"
+            "PROGRAMMET STOPPEDE MED EN FEJL\n"
+            "========================================\n"
+            f"{type(exc).__name__}: {exc}\n",
+            flush=True,
+        )
+
         traceback.print_exc()
+
         raise
