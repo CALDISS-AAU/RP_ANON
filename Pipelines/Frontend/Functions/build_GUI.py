@@ -63,7 +63,7 @@ def build_GUI(parser: GooeyParser) -> None:
         widget="FileChooser",
         gooey_options={
             "wildcard": "PDF-filer (*.pdf)|*.pdf",
-            "initial_dir": "C:\Users\EF01ZQ\OneDrive - Aalborg Universitet\Desktop\ANON\true_test.pdf",
+            "initial_dir": "C:/Users/EF01ZQ/OneDrive - Aalborg Universitet/Desktop/ANON/true_test.pdf",
         },
     )
 
@@ -74,7 +74,7 @@ def build_GUI(parser: GooeyParser) -> None:
         text_for_user="Vælg den mappe den anonymiserede PDF-fil skal gemmes i",
         widget="DirChooser",
         gooey_options={
-            "initial_dir": "C:\Users\EF01ZQ\OneDrive - Aalborg Universitet\Desktop\ANON\finished",
+            "initial_dir": "C:/Users/EF01ZQ/OneDrive - Aalborg Universitet/Desktop/ANON/finished",
         },
     )
 
@@ -93,9 +93,9 @@ def build_GUI(parser: GooeyParser) -> None:
         argument_name="child_name",
         label="Barnets navn",
         required=True,  
-        gooey_options={
-            "initial_dir": "a",
-        },
+        # gooey_options={
+        #     "initial_dir": "a",
+        # },
     )
 
     _add_text_field(
@@ -103,9 +103,9 @@ def build_GUI(parser: GooeyParser) -> None:
         argument_name="parent_1_name",
         label="Forældre 1's navn",
         required=True,
-        gooey_options={
-            "initial_dir": "a",
-        },
+        # gooey_options={
+        #     "initial_dir": "a",
+        # },
     )
 
     _add_text_field(
