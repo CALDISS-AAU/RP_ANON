@@ -5,6 +5,8 @@ To run this script, use the following command from the project root:
 """
 
 ## IMPORTS ##
+import sys
+import traceback
 import wx
 from gooey import Gooey, GooeyParser
 
@@ -68,8 +70,9 @@ def _confirm_warnings(warnings: list[str]) -> bool:
     required_cols=1,
     optional_cols=1,
     encoding="utf-8",
+    return_to_config=True,
 )
-def main() -> dict:
+def main() -> dict | None:
     """Run the frontend and return validated arguments for the backend."""
 
     parser = GooeyParser()
@@ -92,9 +95,11 @@ def main() -> dict:
         should_continue = _confirm_warnings(warnings)
 
         if not should_continue:
-            raise RuntimeError(
-                "Kørslen blev afbrudt, så input kan rettes."
+            print(
+                "Input skal rettes. Går tilbage til indstillingerne.",
+                flush=True,
             )
+            return None
 
     print(
         "\nInput er valideret.",
@@ -121,8 +126,6 @@ if __name__ == "__main__":
         main()
 
     except Exception as exc:
-        import traceback
-
         print(
             "\n"
             "========================================\n"
