@@ -96,7 +96,7 @@ def main() -> dict | None:
 
         if not should_continue:
             print(
-                "Input skal rettes. Går tilbage til indstillingerne.",
+                "Input skal rettes. Gå tilbage til indstillingerne.",
                 flush=True,
             )
             return None
@@ -110,12 +110,6 @@ def main() -> dict | None:
         "\nArgumenter sendt videre til backend:",
         flush=True,
     )
-
-    for argument, value in backend_args.items():
-        print(
-            f"{argument}: {value}",
-            flush=True,
-        )
 
     return backend_args
 
