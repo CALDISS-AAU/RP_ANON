@@ -1,0 +1,18 @@
+[project]
+name = "ANON"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "ocrmypdf>=17.8.1",
+    "pymupdf>=1.28.0",
+    "pytesseract>=0.3.13",
+    "ruff>=0.15.22",
+    "tesseract>=0.1.3",
+]
+
+[project.scripts]
+create-pipeline = "Shared_Functions.Pipeline_Functions.pipeline_generator:main"
+clear-pipeline = "Shared_Functions.Pipeline_Functions.wipe_pipeline_data:main"
+
+[tool.setuptools]
+packages = ["Shared_Functions"]
