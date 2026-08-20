@@ -35,6 +35,7 @@ def main():
     #     patterns=backend_args["patterns"],
     # )
 
+    print("Programmet er nu færdigkørt.")
 
 ## _____________ ##
 
