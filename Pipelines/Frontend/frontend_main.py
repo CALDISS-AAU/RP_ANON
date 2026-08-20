@@ -5,12 +5,47 @@ To run this script, use the following command from the project root:
 """
 
 ## IMPORTS ##
+import wx
 from gooey import Gooey, GooeyParser
 
 # Internal
 from Pipelines.Frontend.Functions.build_GUI import build_GUI
 from Pipelines.Frontend.Functions.extract_and_validate import extract_and_validate
 ## _______ ##
+
+
+## HELPER FUNCTIONS ##
+def _confirm_warnings(warnings: list[str]) -> bool:
+    """Ask the user whether to continue despite validation warnings."""
+
+    warning_text = "\n".join(
+        f"- {warning}"
+        for warning in warnings
+    )
+
+    message = (
+        "Der er indtastet følgende, som ikke var forventet:\n\n"
+        f"{warning_text}\n\n"
+        "Hvis dette er bevidst, tryk 'Fortsæt'.\n"
+        "Ellers tryk 'Gå tilbage' og ret oplysningerne."
+    )
+
+    dialog = wx.MessageDialog(
+        parent=None,
+        message=message,
+        caption="Kontrollér input",
+        style=wx.YES_NO | wx.ICON_WARNING,
+    )
+
+    dialog.SetYesNoLabels(
+        "Fortsæt",
+        "Gå tilbage",
+    )
+
+    result = dialog.ShowModal()
+    dialog.Destroy()
+
+    return result == wx.ID_YES
 
 
 ## MAIN FUNCTION ##
@@ -43,26 +78,28 @@ def main() -> dict:
         ) from exc
 
     if warnings:
-        print(
-            "\nFølgende input afviger fra det forventede format:",
-            flush=True,
-        )
+        should_continue = _confirm_warnings(warnings)
 
-        for warning in warnings:
-            print(
-                f"- {warning}",
-                flush=True,
+        if not should_continue:
+            raise RuntimeError(
+                "Kørslen blev afbrudt, så input kan rettes."
             )
-
-        print(
-            "\nKontrollér venligst, at oplysningerne er korrekte.",
-            flush=True,
-        )
 
     print(
         "\nInput er valideret.",
         flush=True,
     )
+
+    print(
+        "\nArgumenter sendt videre til backend:",
+        flush=True,
+    )
+
+    for argument, value in backend_args.items():
+        print(
+            f"{argument}: {value}",
+            flush=True,
+        )
 
     return backend_args
 
