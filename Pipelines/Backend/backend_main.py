@@ -7,6 +7,7 @@ To run this script, use the following command from the project root:
 ## IMPORTS ##
 # External
 import argparse
+
 # Internal
 from Shared_Functions.logger_functionality import *
 from .Functions.example_functions_script import example_function

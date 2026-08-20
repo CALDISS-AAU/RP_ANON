@@ -20,10 +20,7 @@ from Pipelines.Frontend.Functions.extract_and_validate import extract_and_valida
 def _confirm_warnings(warnings: list[str]) -> bool:
     """Ask the user whether to continue despite validation warnings."""
 
-    warning_text = "\n".join(
-        f"- {warning}"
-        for warning in warnings
-    )
+    warning_text = "\n".join(f"- {warning}" for warning in warnings)
 
     message = (
         "Der er indtastet følgende, som ikke var forventet:\n\n"
@@ -61,6 +58,7 @@ def _confirm_warnings(warnings: list[str]) -> bool:
 
     return result == wx.ID_YES
 
+
 ## MAIN FUNCTION ##
 @Gooey(
     program_name="PDF-anonymiseringsværktøj",
@@ -88,9 +86,7 @@ def main() -> dict | None:
         backend_args, warnings = extract_and_validate(args)
 
     except Exception as exc:
-        raise RuntimeError(
-            f"Fejl under validering af input: {exc}"
-        ) from exc
+        raise RuntimeError(f"Fejl under validering af input: {exc}") from exc
 
     if warnings:
         should_continue = _confirm_warnings(warnings)

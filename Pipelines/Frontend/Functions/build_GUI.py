@@ -76,20 +76,21 @@ def build_GUI(parser: GooeyParser) -> None:
 
     names = parser.add_argument_group(
         "Navne",
-        ("Indtast ALLE kombinationer af navne for de følgende personer, "
-         "separeret med semikolon (;).\n"
-         "Eksempel for en pige hvis fulde navn er Anna Marie Hansen: "
-         "Anna; Anna Hansen; Anna M. Hansen; Frk. Hansen; A. M. Hansen; ...\n"
-         "NB! Der adskilles mellem store og små bogstaver." 
-         "I eksemplet ovenfor vil 'anna' derfor ikke blive anonymiseret!"
-        )
+        (
+            "Indtast ALLE kombinationer af navne for de følgende personer, "
+            "separeret med semikolon (;).\n"
+            "Eksempel for en pige hvis fulde navn er Anna Marie Hansen: "
+            "Anna; Anna Hansen; Anna M. Hansen; Frk. Hansen; A. M. Hansen; ...\n"
+            "NB! Der adskilles mellem store og små bogstaver."
+            "I eksemplet ovenfor vil 'anna' derfor ikke blive anonymiseret!"
+        ),
     )
 
     _add_text_field(
         parser=names,
         argument_name="child_name",
         label="Barnets navn",
-        required=True,  
+        required=True,
     )
 
     _add_text_field(
@@ -100,23 +101,17 @@ def build_GUI(parser: GooeyParser) -> None:
     )
 
     _add_text_field(
-        parser=names,
-        argument_name="parent_2_name",
-        label="Forældre 2's navn"
+        parser=names, argument_name="parent_2_name", label="Forældre 2's navn"
     )
 
     other = parser.add_argument_group(
         "Andet der skal anonymiseres",
-        ("Hvis der er andet der skal anonymiseres, kan det tilføjes her. "
+        (
+            "Hvis der er andet der skal anonymiseres, kan det tilføjes her. "
             "Dette kunne f.eks. være skolens navn, andre navne end barnet og "
             "forældrene, fødselsdage, eller lignende. \n"
             "Denne liste separeres med semikolon, ligesom navnelisterne, "
             "og denne liste er også følsom overfor store/små bogstaver."
-        )
+        ),
     )
-    _add_text_field(
-        parser=other,
-        argument_name="additions",
-        label="   "
-    )
-    
+    _add_text_field(parser=other, argument_name="additions", label="   ")
