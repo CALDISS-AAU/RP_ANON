@@ -1,18 +1,14 @@
 """
-backend_main.py
-Automaticaclly ocr scan pdf files & Permanently redact text matching patterns from PDF files.
+pdf_redactor.py
+Permanently redact text matching patterns from PDF files.
 
-Dependencies: pymupdf, tesseract-ocr, tesseract-ocr-da
-Install:      sudo apt update
-              sudo apt install tesseract-ocr
-              sudo apt install tesseract-ocr-dan
+Dependencies: pymupdf
 Install:      pip install pymupdf
-              pip install ocrmypdf
 
 Usage:
-    python backend_main.py --input document.pdf --patterns "John Smith" "ACC-\d+"
-    python backend_main.py --input document.pdf --categories email phone
-    python backend_main.py --input ./pdfs --patterns "CONFIDENTIAL-\d+" --categories email
+    python pdf_redactor.py --input document.pdf --patterns "John Smith" "ACC-\d+"
+    python pdf_redactor.py --input document.pdf --categories email phone
+    python pdf_redactor.py --input ./pdfs --patterns "CONFIDENTIAL-\d+" --categories email
 
 Built-in categories (--categories):
     email     Email addresses
@@ -30,11 +26,14 @@ NOTE: Always verify redaction output before distributing.
 """
 
 import argparse
+import re
 import sys
 from pathlib import Path
+from dataclasses import dataclass
+
+import fitz  # pymupdf
 
 # Internal
-from Pipelines.Backend.Functions.ocr_func import searchable_pdf
 from Pipelines.Backend.Functions.redaction_func import (
     _build_patterns,
     _redact_pdf,
@@ -49,7 +48,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Permanently redact text from PDF files."
     )
-    parser.add_argument("--input", required=True, help="PDF file or folder of PDFs")
+    parser.add_argument("--input", help="PDF file or folder of PDFs")
     parser.add_argument("--output-dir", default=config.output_dir)
 
     parser.add_argument(
@@ -64,6 +63,12 @@ def main():
         default=[],
         choices=list(BUILTIN_PATTERNS.keys()),
         help="Built-in pattern categories",
+    )
+
+    parser.add_argument(
+        "--replacement",
+        default=None,
+        help="Text inserted in place of each match. Omit for normal redaction.",
     )
 
     parser.add_argument(
@@ -93,18 +98,9 @@ def main():
         help="Patterns/values that should be replaced with [forældre-2]",
     )
 
-    parser.add_argument("--language", default="dan", help="Language of input file")
-
     args = parser.parse_args()
 
-    arguments = [
-        args.patterns,
-        args.categories,
-        args.barn_navn,
-        args.foraeldre_1,
-        args.foraeldre_2,
-    ]
-    if not any(arguments):
+    if not args.patterns and not args.categories:
         sys.exit(
             "[ERROR] Specify at least one --patterns value or --categories option."
         )
@@ -118,31 +114,20 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
 
     patterns = _build_patterns(
-        raw_patterns=args.patterns or [],
-        categories=args.categories or [],
-        whole_word=args.whole_word,
-        barn_navn=args.barn_navn or [],
-        foraeldre_1=args.foraeldre_1 or [],
-        foraeldre_2=args.foraeldre_2 or [],
+        args.patterns or [], args.categories or [], args.whole_word
     )
-
-    print(f"Patterns  : {[label for label, _, _ in patterns]}")
+    print(f"Patterns  : {[label for label, _ in patterns]}")
     print(f"Files     : {len(pdfs)}\n")
     print("NOTE: Verify all output files before distributing.\n")
 
     for pdf_path in pdfs:
-        ocr_path = searchable_pdf(
-            input_path=pdf_path,
-            language=args.language,
-        )
-
         out_path = out_dir / f"{pdf_path.stem}_redacted.pdf"
-
         result = _redact_pdf(
             config=config,
-            pdf_path=ocr_path,
+            pdf_path=pdf_path,
             out_path=out_path,
             patterns=patterns,
+            replacement=args.replacement,
         )
 
         if result["error"]:
