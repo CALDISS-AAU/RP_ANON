@@ -70,7 +70,7 @@ def _confirm_warnings(warnings: list[str]) -> bool:
     required_cols=1,
     optional_cols=1,
     encoding="utf-8",
-    default_size=(900, 900),
+    default_size=(900, 1000),
     # return_to_config=True,
 )
 def main() -> dict | None:
