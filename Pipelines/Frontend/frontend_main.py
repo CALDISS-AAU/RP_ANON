@@ -5,10 +5,6 @@ To run this script, use the following command from the project root:
 """
 
 ## IMPORTS ##
-import os
-
-os.environ["PYTHONUTF8"] = "1"
-
 from gooey import Gooey, GooeyParser
 from argparse import Namespace
 # Internal

@@ -38,6 +38,7 @@ jobs:
         run: >
           uv run pyinstaller
           --onedir
+          --python-option "X utf8=1"
           --paths .
           --collect-submodules Shared_Functions
           --collect-submodules Pipelines.Frontend
