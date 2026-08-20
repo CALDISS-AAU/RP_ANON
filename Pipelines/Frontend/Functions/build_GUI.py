@@ -63,7 +63,7 @@ def build_GUI(parser: GooeyParser) -> None:
         widget="FileChooser",
         gooey_options={
             "wildcard": "PDF-filer (*.pdf)|*.pdf",
-            "initial_dir": "C:/Users/EF01ZQ/OneDrive - Aalborg Universitet/Desktop/ANON/true_test.pdf",
+            "initial_dir": "C:/Users/EF01ZQ/OneDrive - Aalborg Universitet/Desktop/ANON",
         },
     )
 
