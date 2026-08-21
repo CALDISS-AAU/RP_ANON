@@ -29,8 +29,6 @@ NOTE: Always verify redaction output before distributing.
       Test on a copy before processing originals.
 """
 
-import argparse
-import sys
 from pathlib import Path
 
 # Internal
@@ -46,102 +44,57 @@ config = RedactionConfig()
 
 
 def main(
-    pdf_path,
+    input_path,
     output_dir,
     barn_navn,
     foraeldre_1,
     foraeldre_2,
     patterns,
-    categories = ['cpr', 'case-num', 'case-id', 'address']
+    categories =None,
+	language='dan',
+	whole_word=False
 ):
-    parser = argparse.ArgumentParser(
-        description="Permanently redact text from PDF files."
-    )
-    parser.add_argument("--input", required=True, help="PDF file or folder of PDFs")
-    parser.add_argument("--output-dir", default=config.output_dir)
-
-    parser.add_argument(
-        "--patterns",
-        nargs="*",
-        default=[],
-        help="Regex patterns or exact strings to redact",
-    )
-    parser.add_argument(
-        "--categories",
-        nargs="*",
-        default=[],
-        choices=list(BUILTIN_PATTERNS.keys()),
-        help="Built-in pattern categories",
-    )
-
-    parser.add_argument(
-        "--whole-word",
-        action="store_true",
-        help="Match whole words only for string patterns",
-    )
-
-    parser.add_argument(
-        "--barn-navn",
-        nargs="*",
-        default=[],
-        help="Patterns/values that should be replaced with [barnet]",
-    )
-
-    parser.add_argument(
-        "--foraeldre-1",
-        nargs="*",
-        default=[],
-        help="Patterns/values that should be replaced with [forældre-1]",
-    )
-
-    parser.add_argument(
-        "--foraeldre-2",
-        nargs="*",
-        default=[],
-        help="Patterns/values that should be replaced with [forældre-2]",
-    )
-
-    parser.add_argument("--language", default="dan", help="Language of input file")
-
-    args = parser.parse_args()
-
+    if categories is None:
+        categories = ["cpr", "case-num", "case-id", "address"]
+    
     arguments = [
-        args.patterns,
-        args.categories,
-        args.barn_navn,
-        args.foraeldre_1,
-        args.foraeldre_2,
+        patterns,
+        categories,
+        barn_navn,
+		foraeldre_1,
+        foraeldre_2,
     ]
     if not any(arguments):
-        sys.exit(
-            "[ERROR] Specify at least one --patterns value or --categories option."
+
+        raise ValueError(
+            "[ERROR] No redaction or replacement values were provided."
         )
 
-    src = Path(args.input)
+    src = Path(input_path)
     if not src.exists():
         sys.exit(f"[ERROR] Not found: {src}")
 
     pdfs = sorted(src.glob("*.pdf")) if src.is_dir() else [src]
-    out_dir = Path(args.output_dir)
+    out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    patterns = _build_patterns(
-        raw_patterns=args.patterns or [],
-        categories=args.categories or [],
-        whole_word=args.whole_word,
-        barn_navn=args.barn_navn or [],
-        foraeldre_1=args.foraeldre_1 or [],
-        foraeldre_2=args.foraeldre_2 or [],
+    compiled_patterns = _build_patterns(
+        raw_patterns=patterns or [],
+        categories=categories or [],
+        whole_word=whole_word,
+        barn_navn=barn_navn or [],
+        foraeldre_1=foraeldre_1 or [],
+        foraeldre_2=foraeldre_2 or [],
     )
 
-    print(f"Patterns  : {[label for label, _, _ in patterns]}")
+    print(f"Patterns  : {[label for label, _, _ in compiled_patterns]}")
     print(f"Files     : {len(pdfs)}\n")
     print("NOTE: Verify all output files before distributing.\n")
 
     for pdf_path in pdfs:
         ocr_path = searchable_pdf(
             input_path=pdf_path,
-            language=args.language,
+            language=language,
         )
 
         out_path = out_dir / f"{pdf_path.stem}_redacted.pdf"
@@ -150,7 +103,7 @@ def main(
             config=config,
             pdf_path=ocr_path,
             out_path=out_path,
-            patterns=patterns,
+            patterns=compiled_patterns,
         )
 
         if result["error"]:
@@ -161,7 +114,3 @@ def main(
             )
 
     print(f"Output dir    : {out_dir.resolve()}")
-
-
-if __name__ == "__main__":
-    main()
