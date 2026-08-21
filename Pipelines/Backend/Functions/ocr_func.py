@@ -5,9 +5,11 @@ import ocrmypdf
 
 # Functions
 
-def searchable_pdf(input_path: Path, language: str = "dan") -> Path:
-    """Turn a scanned PDF into a searchable PDF."""
 
+def searchable_pdf(input_path: Path, output_dir: Path, language: str = "dan") -> Path:
+    """Turn a scanned PDF into a searchable PDF."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / input_path.name
     ocrmypdf.ocr(
         input_path,
         output_path,
