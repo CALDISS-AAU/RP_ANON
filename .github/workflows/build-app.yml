@@ -43,6 +43,7 @@ jobs:
           --paths .
           --collect-submodules Shared_Functions
           --collect-submodules Pipelines.Frontend
+          --collect-submodules Pipelines.Backend
           main.py
 
       - name: Upload Windows executable
