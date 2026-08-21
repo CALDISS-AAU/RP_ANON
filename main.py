@@ -27,6 +27,8 @@ def main():
     if backend_args is None:
         return None
 
+    print(backend_args)
+
     run_backend(
         pdf_path=backend_args["input"],
         output_dir=backend_args["output-dir"],
