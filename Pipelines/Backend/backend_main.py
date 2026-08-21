@@ -92,19 +92,22 @@ def main(
     print("NOTE: Verify all output files before distributing.\n")
 
     for pdf_path in pdfs:
-        ocr_path = searchable_pdf(
-            input_path=pdf_path,
-            language=language,
-        )
+        with tempfile.TemporaryDirectory() as temp_dir:
 
-        out_path = out_dir / f"{pdf_path.stem}_redacted.pdf"
+            ocr_path = searchable_pdf(
+                input_path=pdf_path,
+                output_dir=Path(temp_dir),
+                language=language,
+            )
 
-        result = _redact_pdf(
-            config=config,
-            pdf_path=ocr_path,
-            out_path=out_path,
-            patterns=compiled_patterns,
-        )
+            out_path = out_dir / f"{pdf_path.stem}_redacted.pdf"
+
+            result = _redact_pdf(
+                config=config,
+                pdf_path=ocr_path,
+                out_path=out_path,
+                patterns=compiled_patterns,
+            )
 
         if result["error"]:
             print(f"  ✗ {pdf_path.name:50s} ERROR — {result['error']}")
@@ -114,3 +117,21 @@ def main(
             )
 
     print(f"Output dir    : {out_dir.resolve()}")
+
+if __name__ == "__main__":
+    try:
+        main()
+ 
+    except Exception as exc:
+        print(
+            "\n"
+            "========================================\n"
+            "PROGRAM STOPPED WITH AN ERROR\n"
+            "========================================\n"
+            f"{type(exc).__name__}: {exc}\n",
+            flush=True,
+        )
+ 
+        traceback.print_exc()
+ 
+        sys.exit(1)
