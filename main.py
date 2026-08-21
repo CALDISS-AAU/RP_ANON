@@ -28,7 +28,7 @@ def main():
         return None
 
     run_backend(
-        input=backend_args["input"],
+        pdf_path=backend_args["input"],
         output_dir=backend_args["output-dir"],
         barn_navn=backend_args["barn-navn"],
         foraeldre_1=backend_args["foraeldre-1"],

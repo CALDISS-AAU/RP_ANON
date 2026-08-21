@@ -45,14 +45,15 @@ from Pipelines.Backend.Functions.redaction_func import (
 config = RedactionConfig()
 
 
-def main(input,
-        output_dir,
-        barn_navn,
-        foraeldre_1,
-        foraeldre_2,
-        patterns,
-        categories = ['cpr', 'case-num', 'case-id', 'address']
-        ):
+def main(
+    pdf_path,
+    output_dir,
+    barn_navn,
+    foraeldre_1,
+    foraeldre_2,
+    patterns,
+    categories = ['cpr', 'case-num', 'case-id', 'address']
+):
     parser = argparse.ArgumentParser(
         description="Permanently redact text from PDF files."
     )
