@@ -40,7 +40,6 @@ jobs:
           --name CALDISS_Anonymiserings_program
           --onedir
           --python-option "X utf8=1"
-          --windowed
           --paths .
           --collect-submodules Shared_Functions
           --collect-submodules Pipelines.Frontend
