@@ -30,6 +30,7 @@ NOTE: Always verify redaction output before distributing.
 """
 
 from pathlib import Path
+import tempfile
 
 # Internal
 from Pipelines.Backend.Functions.ocr_func import searchable_pdf
