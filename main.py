@@ -30,7 +30,7 @@ def main():
     print(backend_args)
 
     run_backend(
-        pdf_path=backend_args["input"],
+        input_path=backend_args["input"],
         output_dir=backend_args["output-dir"],
         barn_navn=backend_args["barn-navn"],
         foraeldre_1=backend_args["foraeldre-1"],
