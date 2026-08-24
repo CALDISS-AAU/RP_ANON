@@ -25,7 +25,7 @@ NOTE: Always verify redaction output before distributing.
       Test on a copy before processing originals.
 """
 
-import argparse
+import os
 import re
 import sys
 from pathlib import Path
