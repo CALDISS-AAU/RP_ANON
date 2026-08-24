@@ -17,7 +17,7 @@ def searchable_pdf(input_path: Path, output_dir: Path, language: str = "dan") ->
         deskew=True,
         rotate_pages=True,
         skip_text=True,
-        # ocr_engine="tesseract"
+        ocr_engine="tesseract"
     )
 
     return output_path

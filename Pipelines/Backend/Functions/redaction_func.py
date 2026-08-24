@@ -65,6 +65,23 @@ BUILTIN_PATTERNS = {
     "address": r"[a-zA-ZæøåÆØÅ\s-]+ \d+[a-zA-Z]?(?:,?\s*(?:st|kl|\d+)\.?(?:\s*(?:tv|th|mf|\d+))?)?,?\s*\d{4}\s+[a-zA-ZæøåÆØÅ\s-]+",
 }
 
+def configure_tesseract_path():
+    if getattr(sys, "frozen", False):
+        app_dir = Path(sys.executable).parent
+    else:
+        app_dir = Path(__file__).resolve().parent
+
+    tesseract_dir = app_dir / "tools" / "tesseract"
+
+    os.environ["PATH"] = (
+        str(tesseract_dir)
+        + os.pathsep
+        + os.environ.get("PATH", "")
+    )
+
+    os.environ["TESSDATA_PREFIX"] = str(
+        tesseract_dir / "tessdata"
+    )
 
 def _build_patterns(
     raw_patterns: list[str],

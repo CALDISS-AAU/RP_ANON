@@ -16,12 +16,13 @@ import argparse
 # Pipeline mains
 from Pipelines.Frontend.frontend_main import main as run_frontend
 from Pipelines.Backend.backend_main import main as run_backend
-# from Pipelines.Backend.Functions.ocr_func import searchable_pdf
+from Pipelines.Backend.Functions.redaction_func import configure_tesseract_path
 ## _______ ##
 
 
 ## MAIN FUNCTION ##
 def main():
+    configure_tesseract_path()
     backend_args = run_frontend()
 
     if backend_args is None:

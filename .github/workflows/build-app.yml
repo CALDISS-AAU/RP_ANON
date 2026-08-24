@@ -24,9 +24,15 @@ jobs:
 
       - name: Sync project dependencies
         run: uv sync --frozen
-
-      - name: Test application imports
-        run: uv run python -c "import main; print('Application imported successfully')"
+      
+      - name: Install Tesseract
+        run: >
+          winget install
+          --exact
+          --id UB-Mannheim.TesseractOCR
+          --silent
+          --accept-package-agreements
+          --accept-source-agreements
 
       - name: Install PyInstaller
         run: uv pip install pyinstaller
@@ -39,6 +45,7 @@ jobs:
           uv run pyinstaller
           --name CALDISS_Anonymiserings_program
           --onedir
+          --windowed
           --python-option "X utf8=1"
           --paths .
           --collect-submodules Shared_Functions
@@ -46,6 +53,20 @@ jobs:
           --collect-submodules Pipelines.Backend
           --collect-submodules ocrmypdf.builtin_plugins
           main.py
+
+      - name: Bundle Tesseract
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force `
+            "dist/CALDISS_Anonymiserings_program/tools/tesseract"
+
+          Copy-Item `
+            "C:/Program Files/Tesseract-OCR/*" `
+            "dist/CALDISS_Anonymiserings_program/tools/tesseract/" `
+            -Recurse
+
+      - name: Test application imports
+        run: uv run python -c "import main; print('Application imported successfully')"
 
       - name: Upload Windows executable
         uses: actions/upload-artifact@v6
