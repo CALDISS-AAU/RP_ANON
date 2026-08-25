@@ -50,7 +50,7 @@ class RedactionConfig:
     redact_color: tuple[float, float, float] = (0, 0, 0)
     text_color: tuple[float, float, float] = (1, 1, 1)
     fontname: str = "helv"
-    fontsize: int = 11
+    fontsize: int = 6
 
 
 BUILTIN_PATTERNS = {
