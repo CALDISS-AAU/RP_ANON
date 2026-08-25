@@ -50,7 +50,7 @@ class RedactionConfig:
     redact_color: tuple[float, float, float] = (0, 0, 0)
     text_color: tuple[float, float, float] = (1, 1, 1)
     fontname: str = "helv"
-    fontsize: int = 6
+    fontsize: int = 11
 
 
 BUILTIN_PATTERNS = {
@@ -180,6 +180,7 @@ def _redact_pdf(
                                 page.add_redact_annot(
                                     rect,
                                     text=replacement,
+                                    fill=config.redact_color,
                                     text_color=config.text_color,
                                     fontname=config.fontname,
                                     fontsize=config.fontsize,
