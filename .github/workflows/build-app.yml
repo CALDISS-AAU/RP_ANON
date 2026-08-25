@@ -60,6 +60,7 @@ jobs:
           --collect-submodules Shared_Functions
           --collect-submodules Pipelines.Frontend
           --collect-submodules Pipelines.Backend
+          --collect-data ocrmypdf
           --collect-submodules ocrmypdf.builtin_plugins
           main.py
 
