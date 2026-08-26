@@ -62,7 +62,7 @@ BUILTIN_PATTERNS = {
     "date": r"\b(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\d{4}[\/\-]\d{2}[\/\-]\d{2})\b",
     "case-id": r"([a-zA-Z0-9]{3}\s\d.\.\d.\.[a-zA-Z0-9]{5})",
     "case-num": r"Sagsnr[.,]?\s*:\s*([^\r\n]+)",
-    "address": r"[a-zA-ZæøåÆØÅ\s-]+ \d+[a-zA-Z]?(?:,?\s*(?:st|kl|\d+)\.?(?:\s*(?:tv|th|mf|\d+))?)?,?\s*\d{4}\s+[a-zA-ZæøåÆØÅ\s-]+",
+    "address": r"\b[A-ZÆØÅ][a-zæøåA-ZÆØÅ0-9\s.-]+?\s+\d+[A-Za-z]?(?:,\s*(?:st|kl|\d+)\.?(?:\s*(?:tv|th|mf|\d+))?)?,\s*\d{4}\s+[A-ZÆØÅ][a-zæøåA-ZÆØÅ\s.-]+\b",
 }
 
 def configure_tesseract_path():
