@@ -62,9 +62,37 @@ def _confirm_warnings(warnings: list[str]) -> bool:
 ## MAIN FUNCTION ##
 @Gooey(
     program_name="PDF-anonymiseringsværktøj",
+    advanced=True,
     program_description=(
         "Dette er et værktøj til anonymisering af danske sagsakter i PDF format."
     ),
+    menu=[
+        {  # defining the menu and contents here
+            "name": "Help",
+            "items": [
+                {
+                    "type": "MessageDialog",
+                    "menuTitle": "Information",
+                    "caption": "Program Documentation",
+                    "message": "The program requires an input .pdf file and a designated, existing output folder & patterns/strings to match info for redaction. When these requirements are met, the program initiates the redaction. The program writes the provided file to a new .pdf file in the specified output folder as [filename]_redacted.pdf.",
+                }
+            ],
+        },
+        {
+            "name": "About",
+            "items": [
+                {
+                    "type": "AboutDialog",
+                    "menuTitle": "About",
+                    "name": "About",
+                    "description": "A program for automatic redaction of information in .pdf files.",
+                    "version": "1.0.0",
+                    "copyright": "2026",
+                    "website": "https://www.caldiss.aau.dk/",
+                }
+            ],
+        },
+    ],
     required_cols=1,
     optional_cols=1,
     encoding="utf-8",

@@ -15,25 +15,29 @@ import argparse
 
 # Pipeline mains
 from Pipelines.Frontend.frontend_main import main as run_frontend
-# from Pipelines.Backend.Functions.ocr_func import searchable_pdf
+from Pipelines.Backend.backend_main import main as run_backend
+from Pipelines.Backend.Functions.redaction_func import configure_tesseract_path
 ## _______ ##
 
 
 ## MAIN FUNCTION ##
 def main():
+    configure_tesseract_path()
     backend_args = run_frontend()
 
     if backend_args is None:
         return None
 
-    # run_backend(
-    #     input=backend_args["input"],
-    #     output_dir=backend_args["output-dir"],
-    #     barn_navn=backend_args["barn-navn"],
-    #     foraeldre_1=backend_args["foraeldre-1"],
-    #     foraeldre_2=backend_args["foraeldre-2"],
-    #     patterns=backend_args["patterns"],
-    # )
+    print(backend_args)
+
+    run_backend(
+        input_path=backend_args["input"],
+        output_dir=backend_args["output-dir"],
+        barn_navn=backend_args["barn-navn"],
+        foraeldre_1=backend_args["foraeldre-1"],
+        foraeldre_2=backend_args["foraeldre-2"],
+        patterns=backend_args["patterns"],
+    )
 
     print("Programmet er nu færdigkørt.")
 

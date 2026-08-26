@@ -25,7 +25,7 @@ NOTE: Always verify redaction output before distributing.
       Test on a copy before processing originals.
 """
 
-import argparse
+import os
 import re
 import sys
 from pathlib import Path
@@ -50,7 +50,7 @@ class RedactionConfig:
     redact_color: tuple[float, float, float] = (0, 0, 0)
     text_color: tuple[float, float, float] = (1, 1, 1)
     fontname: str = "helv"
-    fontsize: int = 11
+    fontsize: int = 6
 
 
 BUILTIN_PATTERNS = {
@@ -62,9 +62,26 @@ BUILTIN_PATTERNS = {
     "date": r"\b(\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}|\d{4}[\/\-]\d{2}[\/\-]\d{2})\b",
     "case-id": r"([a-zA-Z0-9]{3}\s\d.\.\d.\.[a-zA-Z0-9]{5})",
     "case-num": r"Sagsnr[.,]?\s*:\s*([^\r\n]+)",
-    "address": r"[a-zA-ZæøåÆØÅ\s-]+ \d+[a-zA-Z]?(?:,?\s*(?:st|kl|\d+)\.?(?:\s*(?:tv|th|mf|\d+))?)?,?\s*\d{4}\s+[a-zA-ZæøåÆØÅ\s-]+",
+    "address": r"\b[A-ZÆØÅ][a-zæøåA-ZÆØÅ0-9\s.-]+?\s+\d+[A-Za-z]?(?:,\s*(?:st|kl|\d+)\.?(?:\s*(?:tv|th|mf|\d+))?)?,\s*\d{4}\s+[A-ZÆØÅ][a-zæøåA-ZÆØÅ\s.-]+\b",
 }
 
+def configure_tesseract_path():
+    if getattr(sys, "frozen", False):
+        app_dir = Path(sys.executable).parent
+    else:
+        app_dir = Path(__file__).resolve().parent
+
+    tesseract_dir = app_dir / "tools" / "tesseract"
+
+    os.environ["PATH"] = (
+        str(tesseract_dir)
+        + os.pathsep
+        + os.environ.get("PATH", "")
+    )
+
+    os.environ["TESSDATA_PREFIX"] = str(
+        tesseract_dir / "tessdata"
+    )
 
 def _build_patterns(
     raw_patterns: list[str],
@@ -163,6 +180,7 @@ def _redact_pdf(
                                 page.add_redact_annot(
                                     rect,
                                     text=replacement,
+                                    fill=config.redact_color,
                                     text_color=config.text_color,
                                     fontname=config.fontname,
                                     fontsize=config.fontsize,
