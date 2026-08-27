@@ -31,7 +31,7 @@ import sys
 from pathlib import Path
 from dataclasses import dataclass
 
-import fitz  # pymupdf
+import pymupdf
 
 # ── CONFIG ────────────────────────────────────────────────────────────────────
 INPUT_PATH = "input.pdf"
