@@ -45,6 +45,13 @@ jobs:
           --collect-submodules Shared_Functions
           --collect-submodules Pipelines.Frontend
           main.py
+      
+      - name: Create ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            - Path "dist/CALDISS_Anonymiserings_program/*"
+            -DistinationPath  "CALDISS_Anonymiserings_program-windows.zip"
 
       - name: Upload Windows executable
         uses: actions/upload-artifact@v6
