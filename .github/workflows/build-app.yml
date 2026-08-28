@@ -1,7 +1,12 @@
 name: Build app
 
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
 
 jobs:
   build-windows:
@@ -63,13 +68,6 @@ jobs:
           --collect-all ocrmypdf
           --collect-submodules ocrmypdf.builtin_plugins
           main.py
-      
-      - name: Create ZIP
-        shell: pwsh
-        run: |
-          Compress-Archive `
-            - Path "dist/CALDISS_Anonymiserings_program/*"
-            -DistinationPath  "CALDISS_Anonymiserings_program-windows.zip"
 
       - name: Bundle Tesseract
         shell: powershell
@@ -84,9 +82,26 @@ jobs:
 
       - name: Test application imports
         run: uv run python -c "import main; print('Application imported successfully')"
+      
+      - name: Create ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            -Path "dist/CALDISS_Anonymiserings_program/*" `
+            -DestinationPath  "CALDISS_Anonymiserings_program-Windows.zip"
 
       - name: Upload Windows executable
         uses: actions/upload-artifact@v6
         with:
           name: CALDISS_Anonymiserings_program-Windows
           path: dist/CALDISS_Anonymiserings_program/
+      
+      - name: Create GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" `
+            "CALDISS_Anonymiserings_program-windows.zip" `
+            --generate-notes `
+            --title "${{ github.ref_name }}"
