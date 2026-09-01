@@ -150,7 +150,7 @@ def _redact_pdf(
     }
 
     try:
-        with fitz.open(pdf_path) as doc:
+        with pymupdf.open(pdf_path) as doc:
             result["pages"] = len(doc)
 
             for page in doc:
@@ -174,7 +174,7 @@ def _redact_pdf(
                                 page.add_redact_annot(
                                     rect,
                                     fill=config.redact_color,
-                                    align=fitz.TEXT_ALIGN_CENTER,
+                                    align=pymupdf.TEXT_ALIGN_CENTER,
                                 )
                             else:
                                 page.add_redact_annot(
@@ -184,13 +184,13 @@ def _redact_pdf(
                                     text_color=config.text_color,
                                     fontname=config.fontname,
                                     fontsize=config.fontsize,
-                                    align=fitz.TEXT_ALIGN_CENTER,
+                                    align=pymupdf.TEXT_ALIGN_CENTER,
                                 )
 
                             page_redact += 1
 
                 if page_redact > 0:
-                    page.apply_redactions(images=fitz.PDF_REDACT_IMAGE_NONE)
+                    page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE)
                     result["redactions"] += page_redact
 
             out_path.parent.mkdir(parents=True, exist_ok=True)
